@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
   vector< vector<bool> > graph;
   for (int i = 0; i < n; i++) {
     vector<bool> v;
-    for (int j = 0; j < m; j++) {
+    for (int j = 0; j < n; j++) {
       v.push_back(false);
     }
     graph.push_back(v);
