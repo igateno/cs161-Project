@@ -62,7 +62,7 @@ int CountStackSize(SCCStack** stack, Node* endingNode){
 
 void AddSCC(int out[5], int size){
     int index = -1;
-    for(int i = 3; i >= 0; i--){
+    for(int i = 4; i >= 0; i--){
         if(size > out[i]){
             index = i;
         }else{
@@ -153,7 +153,7 @@ void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount)
    // PrintStack(stack);
     if(v->link == v->index){
         int sccSize = CountStackSize(stack, v);
-        if(sccSize > out[5]){
+        if(sccSize > out[4]){
             AddSCC(out, sccSize);
         }
     }
@@ -177,7 +177,7 @@ void findSccs(char* inputFile, int out[5])
     vector<Node> graph= vector<Node>();
     ReadGraph(inputFile, &graph);
     initOutArray(out);
-    PrintGraph(&graph);
+    //PrintGraph(&graph);
     SCCStack* start = NULL;
     SCCStack** stack = &start;
     int count = 1;
