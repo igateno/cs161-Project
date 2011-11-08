@@ -5,63 +5,71 @@
 
 using namespace std;
 
+/*
+ * Struct to be used as a stack nodes.
+ * Linked list allows use of popping and pushing (inserting/removing at front of list)
+ * as well as traversal through the stack. 
+ */
 struct SCCStack{
     int node;
-    int index;
     SCCStack* next;
 };
 
+/*
+ * Debugging function that prints out stack linked list.
+ */
 void PrintStack(SCCStack** stack){
     SCCStack* curr = *stack;
     cout << "\nprinting stack" << endl;
     while(curr != NULL){
-         cout << "node:" << curr << " num:" << curr->node << "index:" << curr->index << endl;
+         cout << "node:" << curr << " num:" << curr->node << endl;
          curr = curr->next;
     }
 }
 
+/*
+ * Function that checks if node already exists within stack.
+ */
 bool NodeInStack(SCCStack** stack, Node* node){
-    //cout<< "Checking Node in Stack." << endl;
-    //cout<<"Finding " << node->startingIndex << endl;
-    //PrintStack(stack);
-    SCCStack* prev = *stack;
     SCCStack* curr = *stack;
     while(curr != NULL){
         if(node->startingIndex == curr->node){
-            //cout << "found it!" << endl;
             return true;
         }
-        prev = curr;
         curr = curr->next;    
     }
-        //cout << "not found" << endl;
         return false;
 }
 
-int CountStackSize(SCCStack** stack, Node* endingNode){
-    //PrintStack(stack);
-    bool loop = false;
+/*
+ * Count the number of nodes in the current SCC.
+ * endingNode is the leader of the current SCC, we pop every node currently in
+ * the stack before and including the leader. These nodes make up the current SCC.
+ */
+int CountSCCSize(SCCStack** stack, Node* endingNode){
+    bool stop = false; //if we hit the leader
     int count = 0;
     SCCStack* curr = *stack;
     SCCStack* deletePtr = *stack;
-    //cout << "starting " << endingNode->startingIndex << endl;
-    //cout << endl;
-    while(curr != NULL && !loop){
+    while(curr != NULL && !stop){
         if(endingNode->startingIndex == curr->node){
-            loop = true;
+            stop = true;
         }
         count++;
-        deletePtr = curr;
+        deletePtr = curr;//delete any nodes we pop from the stack.
         curr = curr->next;
         delete(deletePtr);
     }
-    *stack = curr;
-    //PrintStack(stack);
+    *stack = curr; //stack should not point to leftover nodes.
     return count;
 }
 
+/*
+ * Adds an SCC size to the list of top 5 largest SCCs.
+ */
 void AddSCC(int out[5], int size){
     int index = -1;
+    //first we find the index where the count belongs
     for(int i = 4; i >= 0; i--){
         if(size > out[i]){
             index = i;
@@ -76,16 +84,9 @@ void AddSCC(int out[5], int size){
     out[index] = size;
 }
 
-void PrintGraph(vector<Node>* graph){
-    for(int i = 0; i < graph->size(); i++){
-        cout << graph->at(i).startingIndex;
-        for(int j = 0; j < graph->at(i).edges.size(); j++){
-            cout << graph->at(i).edges.at(j)->startingIndex;
-        }
-        cout << endl;
-    }
-}
-
+/*
+ * Creates a vector of numNodes nodes. This is our graph.
+ */
 void AddNodes(vector<Node>* graph, int numNodes){
     for(int i = 1; i <= numNodes; i++){
         Node newNode = Node();
@@ -94,8 +95,25 @@ void AddNodes(vector<Node>* graph, int numNodes){
     }
 }
 
+/*
+ * Debugging function that prints out each node number followed by each 
+ * node it has a directed edge towards.
+ */
+void PrintGraph(vector<Node>* graph){
+    for(int i = 0; i < graph->size(); i++){
+        cout << graph->at(i).startingIndex;
+        for(int j = 0; j < graph->at(i).edges.size(); j++){
+            cout << " " << graph->at(i).edges.at(j)->startingIndex;
+        }
+        cout << endl;
+    }
+}
+
+/*
+ * Reads input file and adds each node and it's edges into the graph vector.
+ */
 void ReadGraph(char* inputFile, vector<Node>* graph){
-    int number;
+    int number; // stores the first 2 numbers in input file (number of node and edges)
     int edgeStart;
     int edgeEnd;
     ifstream reader;
@@ -103,14 +121,15 @@ void ReadGraph(char* inputFile, vector<Node>* graph){
     if(reader.is_open()) {
         reader >> number;
         graph->reserve(number);
-        AddNodes(graph,number);
+        AddNodes(graph,number);//add nodes to graph
         reader >> number;
         int numEdges = number;
+        //add edges to graph
         while(reader >> edgeStart) {
             reader >> edgeEnd;
-            edgeStart--;
+            edgeStart--;//vector starts at 0 and nodes start at 1.
             edgeEnd--;
-            graph->at(edgeStart).edges.push_back(&graph->at(edgeEnd));
+            graph->at(edgeStart).edges.push_back(&graph->at(edgeEnd));//add edge to node
         }
     }else {
          cout << "error: could not open file" << inputFile << endl;
@@ -125,35 +144,40 @@ void initOutArray(int out[5]){
     out[4] = 0;
 }
 
+/* 
+ * Recursive function that searches graph for SCCS.
+ */
 void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount){
-    v->index = *count;
-    v->link = *count;
+    v->index = *count; //current count of nodes traversed
+    v->leader = *count;
     (*count)++;
+    //add current node to the stack.
     SCCStack* newElem = new SCCStack();
     newElem->node = v->startingIndex;
-    newElem->index = v->index;
     SCCStack* oldTop = *stack;
     *stack = newElem;
     newElem->next = oldTop; 
     
+    //Depth first search through the nodes connected to our current nore.
+    //If a node has not yet been visited we recurse on it.
     for(int i = 0; i < v->edges.size(); i++){
         Node* vPrime = v->edges.at(i);
-        if(vPrime->index == 0){
+        if(vPrime->index == 0){//has not been visited.
             SCCHelper(vPrime, out, count, stack, sccCount);
-            if(v->link > vPrime->link){
-                v->link = vPrime->link;
+            if(v->leader > vPrime->leader){//determine which node is closer to the leader.
+                v->leader = vPrime->leader;
             }
-        }else if(NodeInStack(stack, vPrime)) {
-            if(v->link > vPrime->index){
-                v->link = vPrime->index;
+        }else if(NodeInStack(stack, vPrime)) {//node is part of current SCC.
+            if(v->leader > vPrime->index){//check to see which is closer to leader.
+                v->leader = vPrime->index;
             }
         }
     }
-   // cout << "Checking: link:" << v->link << " index:" << v->index << " startingIndex:" << v->startingIndex << endl;
-   // PrintStack(stack);
-    if(v->link == v->index){
-        int sccSize = CountStackSize(stack, v);
-        if(sccSize > out[4]){
+    
+    //When we find an SCC leader we want to count all the nodes in this SCC.
+    if(v->leader == v->index){//if the current node is a leader of its SCC.
+        int sccSize = CountSCCSize(stack, v);
+        if(sccSize > out[4]){//record this SCC size if it is among largest 5.
             AddSCC(out, sccSize);
         }
     }
@@ -177,7 +201,6 @@ void findSccs(char* inputFile, int out[5])
     vector<Node> graph= vector<Node>();
     ReadGraph(inputFile, &graph);
     initOutArray(out);
-    //PrintGraph(&graph);
     SCCStack* start = NULL;
     SCCStack** stack = &start;
     int count = 1;

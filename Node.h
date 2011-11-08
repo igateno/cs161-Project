@@ -17,7 +17,7 @@ public:
     vector <Node*> edges;
     unsigned int startingIndex;
     unsigned int index;
-    unsigned int link;
+    unsigned int leader;
 
     Node();
 private:

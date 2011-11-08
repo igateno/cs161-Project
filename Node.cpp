@@ -6,5 +6,5 @@ Node::Node() {
     edges = vector<Node*>(); 
     startingIndex = 0;   
     index = 0;
-    link = 0;
+    leader = 0;
 }
