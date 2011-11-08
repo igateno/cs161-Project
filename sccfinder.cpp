@@ -1,4 +1,4 @@
-#include <fstream> 
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include "Node.h"
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
     char* outputFile = argv[2];
 
     findSccs(inputFile, sccSizes);
-	
+
     // Output the first 5 sccs into a file.
     std::ofstream os;
     os.open(outputFile);
