@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <time.h>
 #include "Node.h"
 
 using namespace std;
@@ -11,7 +12,7 @@ using namespace std;
  * as well as traversal through the stack. 
  */
 struct SCCStack{
-    int node;
+    Node* node;
     SCCStack* next;
 };
 
@@ -28,20 +29,6 @@ void PrintStack(SCCStack** stack){
 }
 
 /*
- * Function that checks if node already exists within stack.
- */
-bool NodeInStack(SCCStack** stack, Node* node){
-    SCCStack* curr = *stack;
-    while(curr != NULL){
-        if(node->startingIndex == curr->node){
-            return true;
-        }
-        curr = curr->next;    
-    }
-        return false;
-}
-
-/*
  * Count the number of nodes in the current SCC.
  * endingNode is the leader of the current SCC, we pop every node currently in
  * the stack before and including the leader. These nodes make up the current SCC.
@@ -52,12 +39,13 @@ int CountSCCSize(SCCStack** stack, Node* endingNode){
     SCCStack* curr = *stack;
     SCCStack* deletePtr = *stack;
     while(curr != NULL && !stop){
-        if(endingNode->startingIndex == curr->node){
+        if(endingNode->startingIndex == curr->node->startingIndex){
             stop = true;
         }
         count++;
         deletePtr = curr;//delete any nodes we pop from the stack.
         curr = curr->next;
+        deletePtr->node->inStack = false;
         delete(deletePtr);
     }
     *stack = curr; //stack should not point to leftover nodes.
@@ -153,10 +141,12 @@ void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount)
     (*count)++;
     //add current node to the stack.
     SCCStack* newElem = new SCCStack();
-    newElem->node = v->startingIndex;
+    newElem->node = v;
+    v->inStack = true;//tell the node that it has been added to the stack.
     SCCStack* oldTop = *stack;
     *stack = newElem;
     newElem->next = oldTop; 
+    
     
     //Depth first search through the nodes connected to our current nore.
     //If a node has not yet been visited we recurse on it.
@@ -167,7 +157,7 @@ void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount)
             if(v->leader > vPrime->leader){//determine which node is closer to the leader.
                 v->leader = vPrime->leader;
             }
-        }else if(NodeInStack(stack, vPrime)) {//node is part of current SCC.
+        }else if(vPrime->inStack) {//node is part of current SCC.
             if(v->leader > vPrime->index){//check to see which is closer to leader.
                 v->leader = vPrime->index;
             }
@@ -223,6 +213,8 @@ void findSccs(char* inputFile, int out[5])
  */
 int main(int argc, char* argv[])
 {
+    clock_t start, final = 0;
+    start = clock();
     int sccSizes[5];
     char* inputFile = argv[1];
     char* outputFile = argv[2];
@@ -235,6 +227,9 @@ int main(int argc, char* argv[])
     os << sccSizes[0] << "\t" << sccSizes[1] << "\t" << sccSizes[2] <<
       "\t" << sccSizes[3] << "\t" << sccSizes[4];
     os.close();
+    final = clock() - start;
+    final = (final * 1000)/CLOCKS_PER_SEC;
+    cout<< "Time: " << final << "ms" << endl;
     return 0;
 }
 
