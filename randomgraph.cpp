@@ -12,7 +12,7 @@ bool** allocateGraph(int n)
     cout << "Memory allocation error" << endl;
     exit(1);
   }
-  for (int i = 0; i < n; i++) {
+  for (int i = 1; i <= n; i++) {
     graph[i] = new (nothrow) bool[n];
     if (graph[i] == NULL) {
       cout << "Memory allocation error" << endl;
@@ -24,10 +24,29 @@ bool** allocateGraph(int n)
 
 void deallocateGraph(bool** graph, int n)
 {
-  for (int i = 0; i < n; i++) {
+  for (int i = 1; i <= n; i++) {
     delete(graph[i]);
   }
   delete(graph);
+}
+
+/*
+ * This function reads in /dev/random to seed the
+ * random number generator with a better entropy source
+ * than time(NULL)
+ */
+int seed()
+{
+	int n = 0;
+	ifstream s;
+	s.open("/dev/urandom", ios::binary);
+	if (s.is_open()) {
+		s.read((char *)(&n), sizeof(n));
+		s.close();
+		return n;
+	} else {
+		cout << "error opening /dev/random" << endl;
+	}
 }
 
 void outputRandomGraph(int n, int m, char* outputFile)
@@ -39,11 +58,11 @@ void outputRandomGraph(int n, int m, char* outputFile)
   os << n << endl;
   os << m << endl;
 
-  srand(time(NULL));
+  srand(seed());
   int count = 0;
   while(count < m) {
-    int i = rand() % n;
-    int j = rand() % n;
+    int i = rand() % n+1;
+    int j = rand() % n+1;
     if (!graph[i][j]) {
       os << i << " " << j << endl;
       graph[i][j] = true;
