@@ -7,4 +7,5 @@ Node::Node() {
     startingIndex = 0;   
     index = 0;
     leader = 0;
+    inStack = false;
 }

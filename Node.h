@@ -18,6 +18,7 @@ public:
     unsigned int startingIndex;
     unsigned int index;
     unsigned int leader;
+    bool inStack;
 
     Node();
 private:
