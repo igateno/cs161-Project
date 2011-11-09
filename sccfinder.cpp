@@ -9,7 +9,7 @@ using namespace std;
 /*
  * Struct to be used as a stack nodes.
  * Linked list allows use of popping and pushing (inserting/removing at front of list)
- * as well as traversal through the stack. 
+ * as well as traversal through the stack.
  */
 struct SCCStack{
     Node* node;
@@ -65,7 +65,7 @@ void AddSCC(int out[5], int size){
             break;
         }
     }
-    
+
     for(int j = 4; j > index; j--){
         out[j] = out[j-1];
     }
@@ -84,7 +84,7 @@ void AddNodes(vector<Node>* graph, int numNodes){
 }
 
 /*
- * Debugging function that prints out each node number followed by each 
+ * Debugging function that prints out each node number followed by each
  * node it has a directed edge towards.
  */
 void PrintGraph(vector<Node>* graph){
@@ -132,7 +132,7 @@ void initOutArray(int out[5]){
     out[4] = 0;
 }
 
-/* 
+/*
  * Recursive function that searches graph for SCCS.
  */
 void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount){
@@ -145,9 +145,9 @@ void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount)
     v->inStack = true;//tell the node that it has been added to the stack.
     SCCStack* oldTop = *stack;
     *stack = newElem;
-    newElem->next = oldTop; 
-    
-    
+    newElem->next = oldTop;
+
+
     //Depth first search through the nodes connected to our current nore.
     //If a node has not yet been visited we recurse on it.
     for(int i = 0; i < v->edges.size(); i++){
@@ -163,7 +163,7 @@ void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount)
             }
         }
     }
-    
+
     //When we find an SCC leader we want to count all the nodes in this SCC.
     if(v->leader == v->index){//if the current node is a leader of its SCC.
         int sccSize = CountSCCSize(stack, v);
@@ -171,7 +171,7 @@ void SCCHelper(Node* v, int out[5], int* count, SCCStack** stack, int* sccCount)
             AddSCC(out, sccSize);
         }
     }
-        
+
 }
 
 /**
@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
     os.close();
     final = clock() - start;
     final = (final * 1000)/CLOCKS_PER_SEC;
-    cout<< "Time: " << final << "ms" << endl;
+    //cout<< "Time: " << final << "ms" << endl;
     return 0;
 }
 
