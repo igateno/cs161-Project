@@ -85,6 +85,12 @@ int main(int argc, char* argv[])
   int n = atoi(argv[1]);
   int m = atoi(argv[2]);
   char* outputFile = argv[3];
+
+	if (n > RAND_MAX) {
+		cout << "I can't generate numbers that large" << endl;
+		return 1;
+	}
+
   outputRandomGraph(n, m, outputFile);
 
   return 0;
