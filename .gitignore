@@ -3,3 +3,4 @@ Session.vim
 *.swp
 output/*
 keepers/*
+randGraphs/*
