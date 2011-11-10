@@ -55,7 +55,7 @@ void outputRandomGraph(int n, int m, char* outputFile)
   while(count < m) {
     int i = rand() % n+1;
     int j = rand() % n+1;
-    if (!nodeInGraph(i, j, graph)) {
+    if (true/*!nodeInGraph(i, j, graph)*/) {
       os << i << " " << j << endl;
 			node_t node;
 			node.u = i;
