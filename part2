@@ -30,9 +30,9 @@ def getParam(prompt):
 n = getParam('n: ')
 filename = 'keepers/part2-' + str(n) + '-' + str(time.time())
 file = open(filename, 'w')
-for m in range(n, getParam('max m: '), getParam('increment m by: ')):
+sample = getParam('sample: ')
+for m in range(getParam('min m: '), getParam('max m: '), getParam('increment m by: ')):
 	print 'processing ' + str(n) + ' nodes and ' + str(m) + ' edges.'
-	sample = getParam('sample: ')
 	event = 0
 	for i in range(1, sample):
 		print 'pass ' + str(i)

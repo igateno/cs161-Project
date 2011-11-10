@@ -1,34 +1,16 @@
 #include <fstream>
 #include <iostream>
 #include <new>
+#include <vector>
 #include <cstdlib>
 
 using namespace std;
 
-bool** allocateGraph(int n)
-{
-  bool** graph = new (nothrow) bool*[n];
-  if (graph == NULL) {
-    cout << "Memory allocation error" << endl;
-    exit(1);
-  }
-  for (int i = 1; i <= n; i++) {
-    graph[i] = new (nothrow) bool[n];
-    if (graph[i] == NULL) {
-      cout << "Memory allocation error" << endl;
-      exit(1);
-    }
-  }
-  return graph;
-}
-
-void deallocateGraph(bool** graph, int n)
-{
-  for (int i = 1; i <= n; i++) {
-    delete(graph[i]);
-  }
-  delete(graph);
-}
+struct node {
+	int u;
+	int v;
+};
+typedef struct node node_t;
 
 /*
  * This function reads in /dev/random to seed the
@@ -49,9 +31,19 @@ int seed()
 	}
 }
 
+bool nodeInGraph(int u, int v, vector<node_t> graph)
+{
+	for (int i = 0; i < graph.size(); i++) {
+		node_t node = graph[i];
+		if (node.u == u && node.v == v)
+			return true;
+	}
+	return false;
+}
+
 void outputRandomGraph(int n, int m, char* outputFile)
 {
-  bool** graph = allocateGraph(n);
+  vector<node_t> graph;
 
   std::ofstream os;
   os.open(outputFile);
@@ -63,16 +55,18 @@ void outputRandomGraph(int n, int m, char* outputFile)
   while(count < m) {
     int i = rand() % n+1;
     int j = rand() % n+1;
-    if (!graph[i][j]) {
+    if (!nodeInGraph(i, j, graph)) {
       os << i << " " << j << endl;
-      graph[i][j] = true;
+			node_t node;
+			node.u = i;
+			node.v = j;
+      graph.push_back(node);
       count++;
     }
   }
 
   os.close();
 
-  deallocateGraph(graph, n);
 }
 
 int main(int argc, char* argv[])
