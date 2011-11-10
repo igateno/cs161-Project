@@ -43,7 +43,7 @@ bool nodeInGraph(int u, int v, vector<node_t> graph)
 
 void outputRandomGraph(int n, int m, char* outputFile)
 {
-  vector<node_t> graph;
+ // vector<node_t> graph;
 
   std::ofstream os;
   os.open(outputFile);
@@ -55,14 +55,14 @@ void outputRandomGraph(int n, int m, char* outputFile)
   while(count < m) {
     int i = rand() % n+1;
     int j = rand() % n+1;
-    if (!nodeInGraph(i, j, graph)) {
+    //if (!nodeInGraph(i, j, graph)) {
       os << i << " " << j << endl;
 			node_t node;
 			node.u = i;
 			node.v = j;
-      graph.push_back(node);
+     // graph.push_back(node);
       count++;
-    }
+    //}
   }
 
   os.close();
