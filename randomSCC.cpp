@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
     char* outputFile = argv[3];
 
     findSccs(n, m, sccSizes);
-    cout <<"should be done" << endl;
+    //cout <<"should be done" << endl;
     // Output the first 5 sccs into a file.
     std::ofstream os;
     os.open(outputFile);
@@ -253,7 +253,7 @@ int main(int argc, char* argv[])
     os.close();
     final = clock() - start;
     final = (final * 1000)/CLOCKS_PER_SEC;
-    cout<< "Time: " << final << "ms" << endl;
+    //cout<< "Time: " << final << "ms" << endl;
     return 0;
 }
 

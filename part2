@@ -7,11 +7,11 @@ def writeOut(file, n, m, sample, event):
 	prob = float(event)/sample
 	output = str(m) + " " + str(prob)
 	file.write(output + '\n')
+	print output
 
 def graphConnected(filename, n):
 	file = open(filename)
 	line = file.readline()
-	print line
 	arr = line.split()
 	if (int(arr[0]) == n):
 		return 1
@@ -25,20 +25,17 @@ def getParam(prompt):
 			return int(input)
 		print 'n must be a number'
 
+filename = 'keepers/' + raw_input('filename: ')
 n = getParam('n: ')
-filename = 'keepers/part2-' + str(n) + '-' + str(int(time.time()))
 file = open(filename, 'w')
 sample = getParam('sample: ')
 for m in range(getParam('min m: '), getParam('max m: '), getParam('increment m by: ')):
 	print 'processing ' + str(n) + ' nodes and ' + str(m) + ' edges.'
 	event = 0
 	for i in range(1, sample):
-		print 'pass ' + str(i)
-		randfile = 'output/rand-' + str(n) + '-' + str(m) + '-' + str(sample)
-		os.system('./randomgraph ' + str(n) + ' ' + str(m) + ' ' + randfile)
-		sccfile = 'output/scc-' + str(n) + '-' + str(m) + '-' + str(sample)
-		os.system('./sccfinder ' + randfile + ' ' + sccfile)
-		if (graphConnected(sccfile, n)):
+		randfile = 'randomfiles/' + str(n) + '-' + str(m) + '-' + str(sample)
+		os.system('./randomSCC ' + str(n) + ' ' + str(m) + ' ' + randfile)
+		if (graphConnected(randfile, n)):
 			event += 1
 	writeOut(file, n, m, sample, event)
 file.close()
