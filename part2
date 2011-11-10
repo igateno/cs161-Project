@@ -5,10 +5,8 @@ import time
 
 def writeOut(file, n, m, sample, event):
 	prob = float(event)/sample
-	output = 'n: ' + str(n) + '. m: ' + str(m) + '. Prob: ' + str(prob)
+	output = str(m) + " " + str(prob)
 	file.write(output + '\n')
-	print 'event: ' + str(event) + '. sample: ' + str(sample)
-	print output
 
 def graphConnected(filename, n):
 	file = open(filename)
@@ -28,7 +26,7 @@ def getParam(prompt):
 		print 'n must be a number'
 
 n = getParam('n: ')
-filename = 'keepers/part2-' + str(n) + '-' + str(time.time())
+filename = 'keepers/part2-' + str(n) + '-' + str(int(time.time()))
 file = open(filename, 'w')
 sample = getParam('sample: ')
 for m in range(getParam('min m: '), getParam('max m: '), getParam('increment m by: ')):
